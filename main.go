@@ -11,16 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type SetList struct {
-	Title    string
-	Problems []Problem
-}
-
-type Problem struct {
-	ProblemText   string
-	CorrectAnswer string
-}
-
 func main() {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://root:example@localhost:27017"))
 	if err != nil {
@@ -40,6 +30,7 @@ func main() {
 	r.Use(cors.New(config))
 
 	problem.RegistProblem(r, db)
+	problem.GetSetList(r, db)
 
 	r.Run()
 }
