@@ -1,11 +1,12 @@
 package problem
 
 type SetList struct {
-	Title    string    `json:"title"`
-	Problems []Problem `json:"problems"`
+	ID       string    `json:"_id" bson:"_id"`
+	Title    string    `json:"title" bson:"title"`
+	Problems []Problem `json:"problems" bson:"problems"`
 }
 
 type Problem struct {
-	ProblemText   string `json:"problemtext"`
-	CorrectAnswer string `json:"correctanswer"`
+	ProblemText   string `json:"problemtext" bson:"problemtext"`
+	CorrectAnswer string `json:"correctanswer" bson:"correctanswer"`
 }
