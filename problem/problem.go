@@ -4,9 +4,11 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -32,7 +34,7 @@ func RegistProblem(r *gin.Engine, db *mongo.Database) {
 
 func GetSetList(r *gin.Engine, db *mongo.Database) {
 	r.GET("oneprog-oneans/getsetlist", func(c *gin.Context) {
-		var setlists []SetList
+		var setlists []TitleID
 
 		problemColle := db.Collection("problem")
 
@@ -45,7 +47,7 @@ func GetSetList(r *gin.Engine, db *mongo.Database) {
 		}
 
 		for cur.Next(context.Background()) {
-			var tmp SetList
+			var tmp TitleID
 			cur.Decode(&tmp)
 
 			setlists = append(setlists, tmp)
@@ -53,5 +55,39 @@ func GetSetList(r *gin.Engine, db *mongo.Database) {
 
 		log.Println(setlists)
 		c.JSON(http.StatusOK, setlists)
+	})
+}
+
+func ChallengeProblem(r *gin.Engine, db *mongo.Database) {
+	r.GET("oneprog-oneans/challenge/:id/:nowProblemNum", func(c *gin.Context) {
+		problemColle := db.Collection("problem")
+
+		id := c.Param("id")
+		nowNum := c.Param("nowProblemNum")
+
+		objectID, _ := primitive.ObjectIDFromHex(id)
+
+		var setlist SetList
+
+		err := problemColle.FindOne(context.Background(), bson.M{"_id": objectID}).Decode(&setlist)
+		if err != nil {
+			log.Println(err)
+		}
+
+		problemNum := len(setlist.Problems)
+		num, err := strconv.Atoi(nowNum)
+		if err != nil {
+			log.Println(err)
+		}
+
+		type Status struct {
+			Status string `json":status"`
+		}
+
+		if num >= problemNum {
+			c.JSON(http.StatusOK, Status{"finish"})
+		} else {
+			c.JSON(http.StatusOK, setlist.Problems[num])
+		}
 	})
 }
