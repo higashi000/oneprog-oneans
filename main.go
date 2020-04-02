@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/higashi000/oneprog-oneans/checkanswer"
 	"github.com/higashi000/oneprog-oneans/problem"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -31,6 +32,8 @@ func main() {
 
 	problem.RegistProblem(r, db)
 	problem.GetSetList(r, db)
+	problem.ChallengeProblem(r, db)
+	checkanswer.CheckAnswer(r, db)
 
 	r.Run()
 }
